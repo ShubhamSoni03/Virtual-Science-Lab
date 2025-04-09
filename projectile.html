@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projectile Motion Simulation</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .quiz-btn {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      background-color: #f3f4f6;
+      border-radius: 0.5rem;
+      text-align: left;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .quiz-btn:hover {
+      background-color: #e0e7ff;
+      cursor: pointer;
+    }
+    .quiz-btn.correct {
+      background-color: #d1fae5;
+      border-color: #10b981;
+    }
+    .quiz-btn.incorrect {
+      background-color: #fee2e2;
+      border-color: #ef4444;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 min-h-screen text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-indigo-900 text-white p-4 shadow-md rounded-b-xl mb-6">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">🚀 Projectile Motion</h1>
+      <a href="index.html" class="bg-white text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-100 transition">Back to Home</a>
+    </div>
+  </nav>
+
+  <div class="max-w-5xl mx-auto px-6 py-4">
+    <h1 class="text-4xl font-extrabold text-center text-indigo-800 mb-8 drop-shadow-sm">Projectile Motion Simulator</h1>
+
+    <!-- Controls -->
+    <div class="bg-white/90 p-6 rounded-2xl shadow-xl backdrop-blur mb-8">
+      <h2 class="text-2xl font-semibold text-blue-700 mb-4">Set Your Parameters</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Initial Velocity (m/s): <span id="velocityValue" class="text-blue-700 font-bold">50</span></label>
+          <input type="range" id="velocity" min="10" max="100" value="50" class="w-full accent-blue-600">
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Launch Angle (°): <span id="angleValue" class="text-blue-700 font-bold">45</span></label>
+          <input type="range" id="angle" min="10" max="80" value="45" class="w-full accent-blue-600">
+        </div>
+      </div>
+      <div class="mt-6 flex justify-center gap-4">
+        <button id="launchBtn" class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-2 rounded-full text-lg shadow hover:scale-105 transform transition">Launch</button>
+        <button id="resetBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-full text-lg shadow">Reset</button>
+      </div>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="bg-white/80 p-4 rounded-xl shadow-lg">
+      <h2 class="text-xl font-semibold text-center text-gray-700 mb-2">Motion Display</h2>
+      <div class="flex justify-center">
+        <canvas id="canvas" width="700" height="400" class="border border-gray-300 rounded-lg"></canvas>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="bg-white/90 p-6 rounded-2xl shadow-md mt-8">
+      <h2 class="text-2xl font-semibold text-indigo-700 mb-4">Simulation Results</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-lg">
+        <p><strong class="text-gray-700">⏱️ Time of Flight:</strong> <span id="time" class="text-indigo-800 font-bold">0</span> s</p>
+        <p><strong class="text-gray-700">📏 Range:</strong> <span id="range" class="text-indigo-800 font-bold">0</span> m</p>
+        <p><strong class="text-gray-700">📍 Max Height:</strong> <span id="height" class="text-indigo-800 font-bold">0</span> m</p>
+      </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="bg-white p-6 mt-10 rounded-xl shadow-md">
+      <h2 class="text-2xl font-semibold text-indigo-800 mb-4">🎯 Quick Quiz</h2>
+
+      <!-- Question 1 -->
+      <div class="mb-6">
+        <p class="font-medium text-lg mb-2">1️⃣ At what angle does a projectile cover the maximum horizontal distance?</p>
+        <div class="space-y-2">
+          <button onclick="checkAnswer(this)" data-correct="false" class="quiz-btn">A) 30°</button>
+          <button onclick="checkAnswer(this)" data-correct="true" class="quiz-btn">B) 45°</button>
+          <button onclick="checkAnswer(this)" data-correct="false" class="quiz-btn">C) 60°</button>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="mb-2">
+        <p class="font-medium text-lg mb-2">2️⃣ If the velocity is doubled, how is the range affected?</p>
+        <div class="space-y-2">
+          <button onclick="checkAnswer(this)" data-correct="false" class="quiz-btn">A) It stays the same</button>
+          <button onclick="checkAnswer(this)" data-correct="false" class="quiz-btn">B) It doubles</button>
+          <button onclick="checkAnswer(this)" data-correct="true" class="quiz-btn">C) It becomes four times</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Explanation -->
+    <div class="bg-yellow-100 p-6 rounded-2xl shadow-inner mt-8">
+      <h2 class="text-2xl font-semibold mb-2 text-yellow-800">What's Happening?</h2>
+      <p class="text-gray-800 mb-2">This simulation helps you understand how objects move when launched into the air at an angle. It's based on the principles of physics, specifically projectile motion.</p>
+      <ul class="list-disc list-inside text-gray-700 mb-2">
+        <li>The motion follows a curved path (a parabola) due to gravity.</li>
+        <li>You control the <span class="font-medium">speed</span> and <span class="font-medium">angle</span> of launch.</li>
+        <li>See how those changes affect how far, how high, and how long the projectile travels.</li>
+      </ul>
+      <div class="bg-white border-l-4 border-yellow-400 p-4 rounded mt-4 text-sm">
+        <p class="font-medium text-yellow-800 mb-1">Formulas used:</p>
+        <p class="text-gray-700">Time of Flight = (2 × u × sinθ) / g<br>
+        Range = (u² × sin2θ) / g<br>
+        Max Height = (u² × sin²θ) / (2g)</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const velocitySlider = document.getElementById('velocity');
+    const angleSlider = document.getElementById('angle');
+    const velocityValue = document.getElementById('velocityValue');
+    const angleValue = document.getElementById('angleValue');
+    const timeDisplay = document.getElementById('time');
+    const rangeDisplay = document.getElementById('range');
+    const heightDisplay = document.getElementById('height');
+    const launchBtn = document.getElementById('launchBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const g = 9.8;
+    const scale = 5;
+    let animationFrame;
+    let path = [];
+
+    velocitySlider.oninput = () => velocityValue.textContent = velocitySlider.value;
+    angleSlider.oninput = () => angleValue.textContent = angleSlider.value;
+
+    function resetCanvas() {
+      cancelAnimationFrame(animationFrame);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      path = [];
+    }
+
+    resetBtn.addEventListener('click', resetCanvas);
+
+    launchBtn.addEventListener('click', () => {
+      resetCanvas();
+      let u = parseFloat(velocitySlider.value);
+      let angle = parseFloat(angleSlider.value);
+      let theta = angle * (Math.PI / 180);
+
+      let uX = u * Math.cos(theta);
+      let uY = u * Math.sin(theta);
+      let timeOfFlight = (2 * uY) / g;
+      let maxHeight = (uY * uY) / (2 * g);
+      let range = (u * u * Math.sin(2 * theta)) / g;
+
+      timeDisplay.textContent = timeOfFlight.toFixed(2);
+      heightDisplay.textContent = maxHeight.toFixed(2);
+      rangeDisplay.textContent = range.toFixed(2);
+
+      let t = 0;
+      const interval = 20;
+      let x = 0;
+
+      function draw() {
+        t += interval / 1000;
+        x = uX * t;
+        let y = (uY * t) - (0.5 * g * t * t);
+        if (y < 0) y = 0;
+
+        path.push({ x: x * scale, y: canvas.height - y * scale });
+
+        ctx.fillStyle = '#f9fafb';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw trail
+        ctx.beginPath();
+        ctx.moveTo(path[0].x, path[0].y);
+        for (let point of path) {
+          ctx.lineTo(point.x, point.y);
+        }
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw projectile
+        ctx.beginPath();
+        ctx.arc(x * scale, canvas.height - y * scale, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+
+        if (y > 0 && x < canvas.width / scale) {
+          animationFrame = requestAnimationFrame(draw);
+        }
+      }
+
+      draw();
+    });
+
+    function checkAnswer(selectedBtn) {
+      const buttons = selectedBtn.parentElement.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove('correct', 'incorrect');
+        if (btn.dataset.correct === "true") {
+          btn.classList.add('correct');
+        }
+      });
+
+      if (selectedBtn.dataset.correct === "false") {
+        selectedBtn.classList.add('incorrect');
+      }
+    }
+  </script>
+</body>
+</html>

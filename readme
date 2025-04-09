@@ -1,0 +1,16 @@
+virtual-lab/
+├── index.html          # Homepage
+├── physics.html       # Physics experiments
+├── chemistry.html    # Chemistry experiments
+├── biology.html      # Biology experiments
+├── cs.html          # Computer Science experiments
+├── assets/
+│   ├── js/
+│   │   ├── main.js    # Shared JS
+│   │   ├── physics.js # Physics experiments
+│   │   ├── chemistry.js
+│   │   ├── biology.js
+│   │   └── cs.js
+├── includes/
+│   ├── header.php    # Shared header
+│   └── footer.php   # Shared footer
