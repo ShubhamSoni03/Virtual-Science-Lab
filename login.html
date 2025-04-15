@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LabWiz Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 12s linear infinite;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle {
+      animation: wiggle 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-200 min-h-screen flex items-center justify-center p-4 relative overflow-hidden font-sans">
+
+  <!-- Illustrations -->
+  <div class="absolute top-10 left-10 w-20 h-20 bg-purple-300 rounded-full opacity-30 animate-spin-slow"></div>
+  <div class="absolute bottom-20 right-10 w-24 h-24 bg-blue-300 rounded-full opacity-30 animate-wiggle"></div>
+
+  <!-- Login Card -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 z-10">
+    <div class="text-center mb-6">
+      <div class="flex justify-center items-center text-purple-600 text-4xl font-extrabold gap-2">
+        <span class="animate-bounce">🧪</span>
+        <span>LabWiz</span>
+        <span class="animate-pulse">✨</span>
+      </div>
+      <p class="text-sm text-gray-600 mt-2">Welcome back! Ready to explore?</p>
+    </div>
+    <form class="space-y-4" onsubmit="event.preventDefault(); window.location.href='index.html';">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input type="email" id="email" class="w-full mt-1 px-3 py-2 border rounded" placeholder="you@example.com" />
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="relative">
+          <input type="password" id="password" class="w-full mt-1 px-3 py-2 border rounded pr-10" placeholder="••••••••" />
+          <span id="togglePassword" class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500">👁️</span>
+        </div>
+      </div>
+      <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white text-lg rounded-xl py-2">
+        Login
+      </button>
+    </form>
+    <p class="text-center text-sm text-gray-500 mt-4">
+      New to LabWiz?
+      <a href="signup.html" class="text-purple-600 hover:underline">Sign up</a>
+    </p>
+  </div>
+
+  <!-- Chatbot -->
+  <div class="fixed bottom-6 right-6 z-30" id="chat-container">
+    <button id="chat-toggle" class="bg-white border border-purple-200 shadow-lg rounded-full p-3 hover:shadow-xl">
+      🤖
+    </button>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById("chat-container");
+    const toggleBtn = document.getElementById("chat-toggle");
+
+    toggleBtn.addEventListener("click", () => {
+      const existingBox = document.getElementById("chat-box");
+      if (existingBox) {
+        existingBox.remove();
+        return;
+      }
+
+      const chatBox = document.createElement("div");
+      chatBox.id = "chat-box";
+      chatBox.className = "bg-white border border-purple-300 rounded-xl shadow-xl w-80 p-4";
+      chatBox.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <div class="text-purple-700 font-bold">WizBot</div>
+          <button class="text-gray-400 text-sm" onclick="document.getElementById('chat-box').remove()">✕</button>
+        </div>
+        <div id="chat-messages" class="space-y-2 max-h-60 overflow-y-auto text-sm mb-2">
+          <div class="bg-purple-50 text-purple-700 rounded-lg px-3 py-2">Hi there! I'm WizBot 🤖 Need help with logging in?</div>
+        </div>
+        <div class="flex gap-2">
+          <input id="chat-input" type="text" class="flex-1 border border-purple-200 rounded px-2 py-1 text-sm" placeholder="Ask WizBot..." />
+          <button class="text-purple-600 font-semibold" onclick="handleSend()">Send</button>
+        </div>
+      `;
+      chatContainer.appendChild(chatBox);
+    });
+
+    function handleSend() {
+      const input = document.getElementById("chat-input");
+      const chat = document.getElementById("chat-messages");
+      const text = input.value.trim();
+      if (!text) return;
+
+      chat.innerHTML += `<div class="flex justify-end"><div class="bg-purple-100 text-purple-800 rounded-lg px-3 py-2">${text}</div></div>`;
+
+      let reply = "I'm still learning! Try asking about your email, password, or login issues.";
+      const lower = text.toLowerCase();
+      if (lower.includes("email")) {
+        reply = "Please enter the email you used to sign up, like you@example.com.";
+      } else if (lower.includes("password")) {
+        reply = "Make sure your password is correct. If you forgot it, look for a 'Forgot Password' link.";
+      } else if (lower.includes("labwiz")) {
+        reply = "LabWiz lets students do science experiments online in a fun and interactive way!";
+      } else if (lower.includes("signup")) {
+        reply = "You can go to the signup page to create a new LabWiz account.";
+      } else if (lower.includes("safe")) {
+        reply = "Your account is safe with us. Just use a strong password and don't share it.";
+      } else if (lower.includes("browser")) {
+        reply = "LabWiz works best on Chrome, Firefox, or Edge. Avoid using Internet Explorer.";
+      } else if (lower.includes("device")) {
+        reply = "LabWiz can be used on desktops, laptops, and tablets. A bigger screen is better for experiments!";
+      } else if (lower.includes("support")) {
+        reply = "If you're stuck, email us at support@labwiz.com or ask your teacher for help.";
+      } else if (lower.includes("forgot")) {
+        reply = "Click the 'Forgot Password' link on the login page to reset your password.";
+      }
+
+      setTimeout(() => {
+        chat.innerHTML += `<div class="flex justify-start"><div class="bg-purple-50 text-purple-700 rounded-lg px-3 py-2">${reply}</div></div>`;
+        chat.scrollTop = chat.scrollHeight;
+      }, 700);
+
+      input.value = "";
+    }
+
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const passwordInput = document.getElementById("password");
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
+      this.textContent = type === "password" ? "👁️" : "🙈";
+    });
+  </script>
+</body>
+</html>
